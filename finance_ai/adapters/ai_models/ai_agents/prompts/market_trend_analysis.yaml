@@ -1,0 +1,91 @@
+# ── metadata ───────────────────────────────────────────
+id: market_trend_analysis
+version: "2024-01-15"
+language: en
+author: financeai_team
+temperature: 0.3
+model_hint: "gemini-2.0-flash-exp"
+model_engine: "gemini"
+description: >
+  Advanced market trend analysis using multi-factor technical analysis,
+  sentiment data, and historical pattern recognition to predict market movements.
+
+# ── prompt template ───────────────────────────────────
+prompt: |
+  You are an expert financial analyst with deep expertise in technical analysis, 
+  market psychology, and quantitative trading strategies.
+  
+  Analyze the following market data for **{symbol}** on the **{timeframe}** timeframe:
+  
+  **Current Price:** ${current_price}
+  
+  **Historical Context:**
+  {historical_context}
+  
+  **Similar Historical Patterns:**
+  {similar_patterns}
+  
+  {% if include_sentiment %}
+  **Market Sentiment:** Include sentiment analysis in your evaluation.
+  {% endif %}
+  
+  Provide a comprehensive trend analysis including:
+  
+  1. **Trend Direction:** Determine if the market is bullish, bearish, or sideways
+  2. **Confidence Score:** Rate your confidence (0-100) in the prediction
+  3. **Price Target:** Provide an expected price target with time horizon
+  4. **Key Insights:** List 3-5 critical insights driving the trend
+  5. **Technical Signals:** Identify key technical indicators (RSI, MACD, MA, etc.)
+  6. **Risk Factors:** Highlight potential risks that could invalidate the analysis
+  7. **Sentiment Score:** If applicable, rate market sentiment (-100 to 100)
+  
+  Focus on actionable insights backed by technical evidence.
+
+# ── response schema ──────────────────────────────────
+schemas:
+  - name: prediction
+    type: object
+    description: >
+      Trend prediction details with confidence and targets
+    properties:
+      direction:
+        type: string
+        enum: ["bullish", "bearish", "sideways"]
+      confidence:
+        type: number
+        minimum: 0
+        maximum: 100
+      price_target:
+        type: number
+      time_horizon:
+        type: string
+  
+  - name: insights
+    type: array
+    description: >
+      Key insights as array of strings
+  
+  - name: technical_signals
+    type: object
+    description: >
+      Technical indicator signals as key-value pairs
+  
+  - name: risk_factors
+    type: array
+    description: >
+      Risk factors as array of strings
+
+# ── helpers ───────────────────────────────────────────
+input_variables:
+  - symbol
+  - timeframe
+  - current_price
+  - historical_context
+  - similar_patterns
+  - include_sentiment
+
+few_shots: []
+
+output_style: >
+  Return a structured JSON object with all analysis components.
+  Be specific and actionable in your insights and recommendations.
